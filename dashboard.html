@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VideoCheck</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #2a2e38;
+    --text: #e6e8ec;
+    --muted: #8b909c;
+    --accent: #4f8cff;
+    --accent-dim: #274a8c;
+    --good: #3ecf8e;
+    --warn: #e0a63e;
+    --bad: #e05c5c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2rem;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin: 0 0 0.25rem; }
+  .sub { color: var(--muted); margin: 0 0 1.5rem; font-size: 0.9rem; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem;
+  }
+  .panel h2 { font-size: 0.95rem; margin: 0 0 0.9rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  #dropzone {
+    border: 2px dashed var(--border); border-radius: 8px;
+    padding: 2rem 1rem; text-align: center; cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  #dropzone.drag { border-color: var(--accent); background: rgba(79,140,255,0.06); }
+  #dropzone p { margin: 0.25rem 0; }
+  #dropzone .hint { color: var(--muted); font-size: 0.85rem; }
+  #fileInput { display: none; }
+
+  ul.filelist { list-style: none; margin: 0.9rem 0 0; padding: 0; }
+  ul.filelist li {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0.7rem; border-radius: 6px; background: #1d212b;
+    margin-bottom: 0.4rem; font-size: 0.9rem;
+  }
+  ul.filelist li .size { color: var(--muted); font-size: 0.8rem; }
+
+  button {
+    background: var(--accent); color: #fff; border: none;
+    padding: 0.65rem 1.3rem; border-radius: 7px; font-size: 0.9rem;
+    cursor: pointer; font-weight: 600;
+  }
+  button:disabled { background: var(--accent-dim); cursor: not-allowed; }
+  button.secondary { background: #262b36; color: var(--text); }
+
+  .row { display: flex; justify-content: space-between; align-items: center; }
+
+  .progress-bar-outer {
+    background: #262b36; border-radius: 5px; height: 8px; overflow: hidden; margin-top: 0.35rem;
+  }
+  .progress-bar-inner { background: var(--accent); height: 100%; width: 0%; transition: width .2s; }
+
+  .video-row { padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+  .video-row:last-child { border-bottom: none; }
+  .video-row .top { display: flex; justify-content: space-between; font-size: 0.88rem; }
+  .status-pill {
+    font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600;
+  }
+  .status-pending { background: #2a2e38; color: var(--muted); }
+  .status-running { background: rgba(79,140,255,0.15); color: var(--accent); }
+  .status-done, .status-empty { background: rgba(62,207,142,0.15); color: var(--good); }
+  .status-error, .status-corrupted { background: rgba(224,92,92,0.15); color: var(--bad); }
+
+  .clip-link {
+    display: block; padding: 0.55rem 0.7rem; border-radius: 6px; background: #1d212b;
+    color: var(--text); text-decoration: none; margin-bottom: 0.4rem; font-size: 0.88rem;
+    display: flex; justify-content: space-between;
+  }
+  .clip-link:hover { background: #232937; }
+  .clip-link .dl { color: var(--accent); font-size: 0.8rem; }
+
+  .empty-note { color: var(--muted); font-size: 0.88rem; }
+  .summary { display: flex; gap: 1.4rem; font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
+  .summary b { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>VideoCheck</h1>
+  <p class="sub">Sube tus videos, dale a Iniciar, y descarga los clips con personas cuando termine.</p>
+
+  <div class="panel">
+    <h2>1 · Subir videos</h2>
+    <div id="dropzone">
+      <p><strong>Arrastra tus videos aquí</strong></p>
+      <p class="hint">o haz clic para elegir archivos (.mp4, .mkv, .webm, .mov, .avi...)</p>
+    </div>
+    <input type="file" id="fileInput" multiple accept=".mp4,.mkv,.webm,.mpeg,.mpg,.mov,.avi">
+    <ul class="filelist" id="pendingList"></ul>
+  </div>
+
+  <div class="panel">
+    <div class="row">
+      <h2 style="margin:0">2 · Procesar</h2>
+      <button id="startBtn">▶ Iniciar</button>
+    </div>
+    <div id="progressArea" style="margin-top:1rem"></div>
+  </div>
+
+  <div class="panel">
+    <h2>3 · Clips listos</h2>
+    <div id="clipsArea"><p class="empty-note">Todavía no hay clips.</p></div>
+  </div>
+</div>
+
+<script>
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const pendingList = document.getElementById('pendingList');
+const startBtn = document.getElementById('startBtn');
+const progressArea = document.getElementById('progressArea');
+const clipsArea = document.getElementById('clipsArea');
+
+let polling = null;
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+async function refreshPendingList() {
+  const res = await fetch('/api/videos');
+  const files = await res.json();
+  pendingList.innerHTML = files.length
+    ? files.map(f => `<li><span>${f}</span></li>`).join('')
+    : '<li class="empty-note" style="background:none">Ningún video en cola todavía.</li>';
+}
+
+async function uploadFiles(fileList) {
+  if (!fileList.length) return;
+  const form = new FormData();
+  for (const f of fileList) form.append('video', f);
+  dropzone.querySelector('p').textContent = 'Subiendo...';
+  const res = await fetch('/api/upload', { method: 'POST', body: form });
+  const data = await res.json();
+  dropzone.querySelector('p').innerHTML = '<strong>Arrastra tus videos aquí</strong>';
+  if (data.skipped && data.skipped.length) {
+    alert('Formato no soportado, se ignoraron: ' + data.skipped.join(', '));
+  }
+  await refreshPendingList();
+}
+
+dropzone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => uploadFiles(e.target.files));
+
+['dragenter', 'dragover'].forEach(evt =>
+  dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(evt =>
+  dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove('drag'); }));
+dropzone.addEventListener('drop', e => uploadFiles(e.dataTransfer.files));
+
+startBtn.addEventListener('click', async () => {
+  startBtn.disabled = true;
+  const res = await fetch('/api/start', { method: 'POST' });
+  if (!res.ok) {
+    const err = await res.json();
+    alert(err.error || 'No se pudo iniciar');
+    startBtn.disabled = false;
+    return;
+  }
+  startPolling();
+});
+
+function renderProgress(data) {
+  if (!data || !data.videos) {
+    progressArea.innerHTML = data && data.running
+      ? '<p class="empty-note">Arrancando...</p>'
+      : '<p class="empty-note">Sin procesos en marcha.</p>';
+    return;
+  }
+  const rows = Object.entries(data.videos).map(([name, v]) => {
+    const pct = v.pct || (v.status === 'pending' ? 0 : 100);
+    const stageLabel = v.stage ? ` · ${v.stage}` : '';
+    return `
+      <div class="video-row">
+        <div class="top">
+          <span>${name}${stageLabel}</span>
+          <span class="status-pill status-${v.status}">${v.status}</span>
+        </div>
+        <div class="progress-bar-outer"><div class="progress-bar-inner" style="width:${pct}%"></div></div>
+      </div>`;
+  }).join('');
+
+  progressArea.innerHTML = rows + `
+    <div class="summary">
+      <span><b>${data.done}</b>/${data.total} procesados</span>
+      <span><b>${data.clips_found}</b> clips</span>
+      <span><b>${data.empty_count}</b> vacíos</span>
+      <span><b>${data.error_count + data.corrupted_count}</b> con errores</span>
+    </div>`;
+}
+
+async function renderClips() {
+  const res = await fetch('/api/clips');
+  const clips = await res.json();
+  clipsArea.innerHTML = clips.length
+    ? clips.map(c => `
+        <a class="clip-link" href="/api/download/${encodeURIComponent(c.name)}">
+          <span>${c.name}</span>
+          <span class="dl">${fmtSize(c.size)} · Descargar ↓</span>
+        </a>`).join('')
+    : '<p class="empty-note">Todavía no hay clips.</p>';
+}
+
+async function pollOnce() {
+  const res = await fetch('/api/progress');
+  const data = await res.json();
+  renderProgress(data);
+  await renderClips();
+  if (!data.running) {
+    stopPolling();
+    startBtn.disabled = false;
+    await refreshPendingList();
+  }
+}
+
+function startPolling() {
+  pollOnce();
+  polling = setInterval(pollOnce, 1500);
+}
+function stopPolling() {
+  if (polling) clearInterval(polling);
+  polling = null;
+}
+
+// initial load
+refreshPendingList();
+renderClips();
+pollOnce();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+[project]
+name = "videocheck"
+version = "0.3.0"
+description = "Local, hardware-adaptive person-detection clip extractor"
+requires-python = ">=3.10"
+dependencies = [
+    "ultralytics>=8.0.0",
+    "opencv-python>=4.8.0",
+    "torch>=2.0.0",
+    "flask>=3.0.0",
+    "pywebview>=5.0",
+]
+
+[project.optional-dependencies]
+# Installed on top of the base deps depending on what preinstall.py detects.
+openvino = ["openvino>=2024.0.0"]
+cuda = ["torchvision>=0.15.0"]
+# CUDA note: pip can't know your driver version, so after installing this
+# extra you still run one manual command — see INSTALL.md.
+
+[project.scripts]
+videocheck = "videocheck.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
