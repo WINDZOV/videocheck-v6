@@ -12,8 +12,7 @@ class FakeBackend(DetectionBackend):
         pass
 
     def infer(self, frame):
-	# never used directly in these tests
-        return []  
+        return []  # never used directly in these tests
 
 
 def _detector(merge_gap: float = 90) -> PersonDetector:

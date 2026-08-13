@@ -182,11 +182,13 @@ cd installer
    per-user, if missing); copies the bundled project files into the chosen
    folder; creates a `venv`; runs `preinstall.py --install` (same hardware
    detection as the CLI path — CUDA vs OpenVINO vs CPU); writes
-   `run_videocheck.bat`.
-3. Inno creates the Start Menu entry, optional Desktop icon, and registers
-   the uninstaller.
-4. `run_videocheck.bat` runs `video_check.py --serve`, which opens
-   VideoCheck as a native desktop window (pywebview) — no browser tab.
+   `run_videocheck.vbs`.
+3. Inno creates the Start Menu entry, optional Desktop icon (checked by
+   default), and registers the uninstaller.
+4. `run_videocheck.vbs` launches `video_check.py --serve` through
+   `pythonw.exe` (no console subsystem) via `WScript.Shell.Run(..., 0,
+   False)` (hidden window) — no black terminal flashes, ever. It opens
+   VideoCheck as a native desktop window (pywebview), no browser tab.
 
 ### Known limitations (worth knowing before shipping this to end users)
 

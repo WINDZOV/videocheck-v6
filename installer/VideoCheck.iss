@@ -50,7 +50,7 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
 
 [Files]
 ; The real work (find/install Python, venv, hardware detection, pip
@@ -68,14 +68,14 @@ Filename: "{tmp}\{#CoreExeName}"; \
     Flags: waituntilterminated
 
 ; Step 2 (Finish page): standard "Launch the app now" checkbox.
-Filename: "{app}\run_videocheck.bat"; \
+Filename: "{app}\run_videocheck.vbs"; \
     Description: "Abrir {#MyAppName} ahora"; \
     Flags: postinstall skipifsilent nowait shellexec
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\run_videocheck.bat"; WorkingDir: "{app}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\run_videocheck.vbs"; WorkingDir: "{app}"
 Name: "{group}\Desinstalar {#MyAppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\run_videocheck.bat"; \
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\run_videocheck.vbs"; \
     WorkingDir: "{app}"; Tasks: desktopicon
 
 [UninstallDelete]

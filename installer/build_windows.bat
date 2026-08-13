@@ -25,18 +25,16 @@ setlocal
 python -m pip install --upgrade pyinstaller
 if errorlevel 1 goto :error
 
-REM --windowed: no console window at all — the installer shows its own
-REM pywebview progress window instead (see bootstrap.py main_gui()).
+REM --windowed: no console window — the installer shows its own Tkinter
+REM progress window instead (see bootstrap.py main_gui()). Tkinter ships
+REM with Python's standard library, so unlike an earlier pywebview-based
+REM attempt, this doesn't depend on the WebView2 Runtime being present.
 REM --add-data "src;dest_inside_bundle" bundles the project files next to
 REM bootstrap.py so it can copy them into the user's install folder.
 python -m PyInstaller ^
     --onefile ^
     --windowed ^
     --name VideoCheckInstallerCore ^
-    --hidden-import webview ^
-    --hidden-import webview.platforms.winforms ^
-    --hidden-import webview.platforms.edgechromium ^
-    --collect-all webview ^
     --add-data "..\video_check.py;." ^
     --add-data "..\preinstall.py;." ^
     --add-data "..\pyproject.toml;." ^

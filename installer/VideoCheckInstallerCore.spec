@@ -1,19 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all
-
-datas = [('../video_check.py', '.'), ('../preinstall.py', '.'), ('../pyproject.toml', '.'), ('../dashboard.html', '.'), ('../Makefile', '.'), ('../src', 'src')]
-binaries = []
-hiddenimports = ['webview', 'webview.platforms.winforms', 'webview.platforms.edgechromium']
-tmp_ret = collect_all('webview')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
     ['bootstrap.py'],
     pathex=[],
-    binaries=binaries,
-    datas=datas,
-    hiddenimports=hiddenimports,
+    binaries=[],
+    datas=[('../video_check.py', '.'), ('../preinstall.py', '.'), ('../pyproject.toml', '.'), ('../dashboard.html', '.'), ('../Makefile', '.'), ('../src', 'src')],
+    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
