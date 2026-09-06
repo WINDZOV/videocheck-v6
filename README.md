@@ -297,4 +297,8 @@ VideoCheck includes bundling scripts to produce single-click desktop installers 
 
 ## 📄 License
 
-This project is open source and available under the standard project terms. Feel free to modify and adapt it to your workflow.
+**Proprietary and Confidential.** All rights reserved.
+
+Copyright (c) 2026.
+
+This software, including its source code, documentation, and related assets, is proprietary and confidential. Unauthorized copying, modification, distribution, public display, reverse engineering, or commercial exploitation of this software, in whole or in part, via any medium, is strictly prohibited without prior written permission from the copyright owner.
