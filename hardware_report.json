@@ -1,0 +1,22 @@
+{
+  "os": {
+    "system": "Linux",
+    "release": "7.0.0-30-generic",
+    "machine": "x86_64"
+  },
+  "gpu": {
+    "present": false
+  },
+  "cpu": {
+    "name": "Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz",
+    "cores": 8,
+    "vendor": "intel"
+  },
+  "ffmpeg": {
+    "ffmpeg": true,
+    "ffprobe": true,
+    "ffmpeg_path": "/usr/bin/ffmpeg",
+    "ffprobe_path": "/usr/bin/ffprobe"
+  },
+  "profile": "openvino"
+}
