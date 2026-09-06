@@ -1,0 +1,88 @@
+# ── Python & Bytecode ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ── Virtual Environments ───────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ── VideoCheck Runtime & Processing Folders ───────────────────
+# Input video staging folder
+videosrc/
+
+# Output directories created by the pipeline
+clips/
+empty_videos/
+originals_processed/
+corrupted/
+
+# Runtime state files generated during execution
+progress.json
+hardware_report.json
+
+# ── AI / ML Models & Framework Artifacts ──────────────────────
+# Downloaded weights and exported OpenVINO / ONNX models
+*.pt
+*.onnx
+*_openvino_model/
+
+# Ultralytics runs and caches
+runs/
+.ultralytics/
+
+# ── Packaging & PyInstaller Artifacts ─────────────────────────
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Installer build directories and output bundles
+installer/build/
+installer/dist/
+installer/dmg_stage/
+*.exe
+*.dmg
+*.pkg
+
+# ── Testing & Coverage ─────────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ── OS & Editor Artifacts ─────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+
+# Linux
+*~
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
